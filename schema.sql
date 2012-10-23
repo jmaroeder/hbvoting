@@ -12,6 +12,8 @@ create table voters (
 
 drop table if exists votes;
 create table votes (
-  voterid integer primary key,
-  choice varchar not null
+  voteid integer primary key,
+  choice varchar not null,
+  voterid integer not null,
+  foreign key(voterid) references voters(voterid)
 );
