@@ -23,5 +23,5 @@ def home():
 if __name__ == '__main__':
 	if not app.config['DEBUG']:
 		app.run(host='0.0.0.0')
-	else
+	else:
 		app.run()
