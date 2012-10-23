@@ -168,3 +168,6 @@ bin
 lib
 include
 Scripts
+
+# Keep settings from being tracked
+settings.py
