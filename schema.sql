@@ -1,19 +1,19 @@
-drop table if exists voters;
-create table voters (
-  voterid integer primary key autoincrement,
-  assigned_id integer,
-  ethnicity varchar not null,
-  email varchar not null,
-  mentor varchar not null,
-  gender varchar not null,
-  city varchar not null,
-  party varchar not null
+DROP TABLE IF EXISTS person;
+CREATE TABLE person (
+  personid INTEGER, PRIMARY KEY autoincrement,
+  assigned_id INTEGER,
+  ethnicity VARCHAR NOT NULL,
+  email VARCHAR NOT NULL,
+  mentor VARCHAR NOT NULL,
+  gender VARCHAR NOT NULL,
+  city VARCHAR NOT NULL,
+  party VARCHAR NOT NULL
 );
 
-drop table if exists votes;
-create table votes (
-  voteid integer primary key,
-  choice varchar not null,
-  voterid integer not null,
-  foreign key(voterid) references voters(voterid)
+DROP TABLE IF EXISTS vote;
+CREATE TABLE vote (
+  voteid INTEGER PRIMARY KEY,
+  choice VARCHAR NOT NULL,
+  personid INTEGER NOT NULL,
+  FOREIGN KEY(personid) REFERENCES person(personid)
 );
