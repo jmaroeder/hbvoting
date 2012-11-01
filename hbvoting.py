@@ -2,6 +2,7 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
 		render_template, flash, _app_ctx_stack
 from contextlib import closing
+import csv
 
 
 app = Flask(__name__)
@@ -20,6 +21,15 @@ def init_db():
 		with app.open_resource('schema.sql') as f:
 			db.cursor().executescript(f.read())
 		db.commit()
+		
+		
+def load_db(csvfile):
+	with closing(connect_db()) as db:
+		with app.open_resource(csvfile) as f:
+			rowreader = csv.reader(f, dialect='excel')
+			for row in rowreader:
+				
+		db.commit()
 
 @app.before_request
 def before_request():
@@ -34,37 +44,36 @@ def teardown_request(exception):
 
 @app.route('/')
 def home():
-	if not sessions.get('authorized'):
+	if not session.get('authorized'):
 		abort(401)
 	return render_template('home.html')
 
 
 @app.route('/vote', methods=['POST'])
 def vote():
-	if not sessions.get('authorized'):
+	if not session.get('authorized'):
 		abort(401)
 	
-	error = None
-	
 	# verify valid voter id
-	cur = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', request.form['voterid']).fetchone()
+	cur = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', [request.form['voterid']]).fetchone()
 	
-	if cur.rowcount > 0:
+	if cur:
 		# check to make sure they haven't already voted
 		row = cur.fetchone()
 		if row['voteid'] == None:
 			# we're good
-			g.db.execute('INSERT INTO vote (choice, personid) VALUES (?, ?)', request.form['choice'], row['personid'])
+			flash(request.form['choice'])
+			g.db.execute('INSERT INTO vote (choice, personid) VALUES (?, ?)', [request.form['choice'], row['personid']])
 			g.db.commit()
-			flash('You voted for %s.' % request.form['choice'])
+			flash('You voted for %s. <a href="%s">Click here to confirm.</a>' % (request.form['choice'], url_for('home')))
 			return redirect(url_for('home'))
 		else:
-			error = "You've already voted!"
-			
-			
+			flash("You've already voted!", category='error')
+	else:
+		flash('Invalid voter ID', category='error')
 	
-	cur = g.db.execute('insert into votes (
-
+		
+	return redirect(url_for('home'))
 
 @app.route('/authorize', methods=['GET', 'POST'])
 def authorize():
@@ -74,7 +83,7 @@ def authorize():
 			session['authorized'] = True
 			flash('Authorized')
 			return redirect(url_for('home'))
-		else
+		else:
 			error = 'Invalid authorization code'
 	return render_template('authorize.html', error=error)
 

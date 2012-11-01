@@ -1,4 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>Nothing here yet.</p>
+<form action="{{ url_for('vote') }}" method="post">
+<dl>
+	<dt>Voter ID:</dt>
+	<dd><input type="text" name="voterid"></dd>
+	<br>
+	<dt>Vote for President:</dt>
+	<dd><input type="radio" name="choice" value="obama">Barack Obama</dd>
+	<dd><input type="radio" name="choice" value="romney">Mitt Romney</dd>
+	<br>
+	<dd><input type="submit" value="Vote"></dd>
+</dl>
 {% endblock %}

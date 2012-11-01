@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS person;
 CREATE TABLE person (
-  personid INTEGER, PRIMARY KEY autoincrement,
-  assigned_id INTEGER,
+  personid INTEGER PRIMARY KEY AUTOINCREMENT,
+  assigned_id INTEGER NOT NULL UNIQUE,
   ethnicity VARCHAR NOT NULL,
   email VARCHAR NOT NULL,
   mentor VARCHAR NOT NULL,
