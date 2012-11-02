@@ -26,9 +26,10 @@ def init_db():
 def load_db(csvfile):
 	with closing(connect_db()) as db:
 		with app.open_resource(csvfile) as f:
-			rowreader = csv.reader(f, dialect='excel')
+			rowreader = csv.DictReader(f)
 			for row in rowreader:
-				
+				db.execute('INSERT INTO person (assigned_id, ethnicity, email, mentor, gender, city, party) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+						   [row['Assigned ID', row['Ethnicity:'], row['HB Email: (Must be @hb.edu)'], row['Mentor Group:'], row['Gender: '], row['City: '], row['Party Affiliation: ']])
 		db.commit()
 
 @app.before_request
