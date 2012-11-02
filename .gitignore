@@ -171,3 +171,7 @@ Scripts
 
 # Keep settings from being tracked
 settings.py
+
+# Don't sync db or csv
+*.db
+*.csv

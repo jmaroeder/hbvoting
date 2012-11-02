@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Vote</title>
+{% block head %}
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<title>{% block title %}Vote{% endblock %}</title>
+{% endblock %}
 </head>
-
 <body>
 <div class="page">
 	<h1>Vote</h1>

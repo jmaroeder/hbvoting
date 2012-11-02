@@ -29,7 +29,7 @@ def load_db(csvfile):
 			rowreader = csv.DictReader(f)
 			for row in rowreader:
 				db.execute('INSERT INTO person (assigned_id, ethnicity, email, mentor, gender, city, party) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-						   [row['Assigned ID', row['Ethnicity:'], row['HB Email: (Must be @hb.edu)'], row['Mentor Group:'], row['Gender: '], row['City: '], row['Party Affiliation: ']])
+						   [row['Assigned ID'], row['Ethnicity:'], row['HB Email: (Must be @hb.edu)'], row['Mentor Group:'], row['Gender: '], row['City: '], row['Party Affiliation: ']])
 		db.commit()
 
 @app.before_request
@@ -56,18 +56,17 @@ def vote():
 		abort(401)
 	
 	# verify valid voter id
-	cur = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', [request.form['voterid']]).fetchone()
+	cur = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', [request.form['voterid']])
 	
 	if cur:
 		# check to make sure they haven't already voted
 		row = cur.fetchone()
 		if row['voteid'] == None:
 			# we're good
-			flash(request.form['choice'])
 			g.db.execute('INSERT INTO vote (choice, personid) VALUES (?, ?)', [request.form['choice'], row['personid']])
 			g.db.commit()
-			flash('You voted for %s. <a href="%s">Click here to confirm.</a>' % (request.form['choice'], url_for('home')))
-			return redirect(url_for('home'))
+			flash('You voted for %s.' % (request.form['choice']))
+			return redirect(url_for('confirm'))
 		else:
 			flash("You've already voted!", category='error')
 	else:
@@ -75,6 +74,13 @@ def vote():
 	
 		
 	return redirect(url_for('home'))
+
+@app.route('/confirm')
+def confirm():
+	if not session.get('authorized'):
+		abort(401)
+	return render_template('confirm.html')
+
 
 @app.route('/authorize', methods=['GET', 'POST'])
 def authorize():
