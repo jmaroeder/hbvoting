@@ -56,17 +56,21 @@ def vote():
 		abort(401)
 	
 	# verify valid voter id
-	cur = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', [request.form['voterid']])
-	
-	if cur:
+	row = g.db.execute('SELECT person.personid, person.assigned_id, vote.voteid FROM person LEFT JOIN vote ON person.personid = vote.personid WHERE assigned_id = ?', [request.form['voterid']]).fetchone()
+	if row != None:
+		# valid voter ID
 		# check to make sure they haven't already voted
-		row = cur.fetchone()
 		if row['voteid'] == None:
-			# we're good
-			g.db.execute('INSERT INTO vote (choice, personid) VALUES (?, ?)', [request.form['choice'], row['personid']])
-			g.db.commit()
-			flash('You voted for %s.' % (request.form['choice']))
-			return redirect(url_for('confirm'))
+			# haven't voted yet
+			
+			# check to make sure they made a choice
+			if request.form.get('choice', None) != None and request.form['choice'] != '':
+				g.db.execute('INSERT INTO vote (choice, personid) VALUES (?, ?)', [request.form['choice'], row['personid']])
+				g.db.commit()
+				flash('You voted for %s.' % (request.form['choice']))
+				return redirect(url_for('confirm'))
+			else:
+				flash('You must choose a candidate.', category='error')
 		else:
 			flash("You've already voted!", category='error')
 	else:
@@ -93,6 +97,19 @@ def authorize():
 		else:
 			error = 'Invalid authorization code'
 	return render_template('authorize.html', error=error)
+
+
+@app.route('/results', methods=['GET', 'POST'])
+def results():
+	error = None
+	if request.method == 'POST':
+		if request.form['code'] == app.config['AUTH_CODE']:
+			# build and return results CSV
+			cur = g.db.execute('SELECT')
+			# TODO
+		else:
+			error = 'Invalid authorization code'
+	return render_template('results.html', error=error)
 
 
 if __name__ == '__main__':

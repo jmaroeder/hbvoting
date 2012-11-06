@@ -11,4 +11,33 @@
 	<br>
 	<dd><input type="submit" value="Vote"></dd>
 </dl>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	// clear the form
+	$('form').each(function() { this.reset(); });
+	
+	$('form').first().submit(function() {
+		$('form .error').remove();
+		var hasError = false;
+		/*
+		if ($.trim($('input[name=voterid]').val()) == "") {
+			$('input:submit').first().before('<div class="error">You must enter your voter ID.</div>');
+			hasError = true;
+		} else if (!$('input[name=choice]:checked').val()) {
+			$('input:submit').first().before('<div class="error">You must choose a candidate.</div>');
+			hasError = true;
+		}
+		*/
+		
+		if (hasError) {
+			return false;
+		} else {
+			return true;
+		}
+	});
+	
+});
+</script>
+
 {% endblock %}

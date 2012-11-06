@@ -5,4 +5,17 @@
 {% endblock %}
 {% block body %}
 <p>Thank you for voting!</p>
+<p>This page will automatically reset in <span id="countdown">5</span> seconds...</p>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	countdownTimer = setInterval(function() {
+		$('#countdown').html(parseInt($('#countdown').html()) - 1);
+		if (parseInt($('#countdown').html()) <= 0) {
+			clearInterval(countdownTimer);
+		}
+	}, 1000);
+	
+});
+</script>
 {% endblock %}
