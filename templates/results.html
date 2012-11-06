@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action="{{ url_for('results') }}" method="post">
+<dl>
+	<dt>Code:</dt>
+	<dd><input type="password" name="code"></dd>
+	<dd><input type="submit" value="Authorize"></dd>
+</dl>
+</form>
+{% endblock %}

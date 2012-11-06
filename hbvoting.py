@@ -1,8 +1,9 @@
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-		render_template, flash, _app_ctx_stack
+		render_template, flash, _app_ctx_stack, Response
 from contextlib import closing
 import csv
+import StringIO
 
 
 app = Flask(__name__)
@@ -99,13 +100,28 @@ def authorize():
 	return render_template('authorize.html', error=error)
 
 
-@app.route('/results', methods=['GET', 'POST'])
+@app.route('/results.csv', methods=['GET', 'POST'])
 def results():
 	error = None
 	if request.method == 'POST':
 		if request.form['code'] == app.config['AUTH_CODE']:
 			# build and return results CSV
-			cur = g.db.execute('SELECT')
+			cur = g.db.execute('SELECT person.ethnicity, person.mentor, person.gender, person.city, person.party, vote.choice FROM person LEFT JOIN vote ON person.personid = vote.personid')
+			rows = cur.fetchall()
+			
+			output = StringIO.StringIO()
+			writer = csv.DictWriter(output, rows[0].keys(), extrasaction='ignore')
+			writer.writeheader()
+			
+			for row in rows:
+				tRow = {}
+				for k in row.keys():
+					tRow[k] = row[k]
+			
+				writer.writerow(tRow)
+			
+			return Response(output.getvalue(), mimetype='text/csv')
+			
 			# TODO
 		else:
 			error = 'Invalid authorization code'
