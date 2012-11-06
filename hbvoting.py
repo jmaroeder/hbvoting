@@ -46,7 +46,7 @@ def teardown_request(exception):
 @app.route('/')
 def home():
 	if not session.get('authorized'):
-		abort(401)
+		return redirect(url_for('authorize'))
 	return render_template('home.html')
 
 

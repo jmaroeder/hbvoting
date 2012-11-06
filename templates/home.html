@@ -3,11 +3,11 @@
 <form action="{{ url_for('vote') }}" method="post">
 <dl>
 	<dt>Voter ID:</dt>
-	<dd><input type="text" name="voterid"></dd>
+	<dd><input type="number" name="voterid"></dd>
 	<br>
 	<dt>Vote for President:</dt>
-	<dd><input type="radio" name="choice" value="Obama">Barack Obama</dd>
-	<dd><input type="radio" name="choice" value="Romney">Mitt Romney</dd>
+	<dd><input type="radio" name="choice" value="Obama" id="choice_obama"><label for="choice_obama">Barack Obama</label></dd>
+	<dd><input type="radio" name="choice" value="Romney" id="choice_romney"><label for="choice_romney">Mitt Romney</label></dd>
 	<br>
 	<dd><input type="submit" value="Vote"></dd>
 </dl>
